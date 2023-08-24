@@ -1,21 +1,17 @@
 # Membrane.Translate
+Plugin providing a translation filter. Currently backed by Deepl, for which you need an authentication key.
 
-**TODO: Add description**
+This element is used in production.
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `membrane_translate_plugin` to your list of dependencies in `mix.exs`:
-
 ```elixir
 def deps do
   [
-    {:membrane_translate_plugin, "~> 0.1.0"}
+    {:membrane_translate_plugin, github: "kim-company/membrane_translate_plugin"}
   ]
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/membrane_translate_plugin>.
-
+## Copyright and License
+Copyright 2023, [KIM Keep In Mind GmbH](https://www.keepinmind.info/)
+Licensed under the [Apache License, Version 2.0](LICENSE)
