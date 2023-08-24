@@ -64,14 +64,19 @@ defmodule Membrane.Translate.Deepl.Filter do
     response = translate_cached(state, buffer.payload)
     latency = DateTime.diff(DateTime.utc_now(), start_at, :nanosecond)
 
-    metadata = %{
-      latency: latency,
-      pts: buffer.pts,
-      input: %{
-        text: buffer.payload,
-        language: state.source_language_code
-      }
-    }
+    metadata =
+      Map.merge(
+        %{
+          latency: latency,
+          pts: buffer.pts,
+          input: %{
+            text: buffer.payload,
+            language: state.source_language_code
+          }
+        },
+        buffer.metadata,
+        fn _key, left, _right -> left end
+      )
 
     case response do
       {:ok, [sentence]} ->
