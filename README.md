@@ -12,6 +12,12 @@ def deps do
 end
 ```
 
+Remember then to configure an adapter for Tesla. We use Mint, which you need to
+add as a dependency to your project and then add the following line to your config.
+```
+config :tesla, adapter: Tesla.Adapter.Mint
+```
+
 ## Copyright and License
 Copyright 2023, [KIM Keep In Mind GmbH](https://www.keepinmind.info/)
 Licensed under the [Apache License, Version 2.0](LICENSE)
