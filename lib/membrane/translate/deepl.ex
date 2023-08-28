@@ -4,7 +4,40 @@ defmodule Membrane.Translate.Deepl do
   @type t :: %__MODULE__{client: Tesla.Client.t()}
   defstruct client: nil
 
-  @language_codes ~w(BG CS DA DE EL EN-GB EN-US ES ET FI FR HU ID IT JA KO LT LV NB NL PL PT-BR PT-PT RO RU SK SL SV TR UK ZH)
+  # https://www.deepl.com/docs-api/translate-text/translate-text
+  @supported_languages [
+    {"BG", "Bulgarian"},
+    {"CS", "Czech"},
+    {"DA", "Danish"},
+    {"DE", "German"},
+    {"EL", "Greek"},
+    {"EN-GB", "English (British)"},
+    {"EN-US", "English (American)"},
+    {"ES", "Spanish"},
+    {"ET", "Estonian"},
+    {"FI", "Finnish"},
+    {"FR", "French"},
+    {"HU", "Hungarian"},
+    {"ID", "Indonesian"},
+    {"IT", "Italian"},
+    {"JA", "Japanese"},
+    {"KO", "Korean"},
+    {"LT", "Lithuanian"},
+    {"LV", "Latvian"},
+    {"NB", "Norwegian (Bokmål)"},
+    {"NL", "Dutch"},
+    {"PL", "Polish"},
+    {"PT-BR", "Portuguese (Brazilian)"},
+    {"PT-PT", "Portuguese (all Portuguese varieties excluding Brazilian Portuguese)"},
+    {"RO", "Romanian"},
+    {"RU", "Russian"},
+    {"SK", "Slovak"},
+    {"SL", "Slovenian"},
+    {"SV", "Swedish"},
+    {"TR", "Turkish"},
+    {"UK", "Ukrainian"},
+    {"ZH", "Chinese (simplified)"}
+  ]
 
   @type sentence :: String.t()
 
@@ -27,6 +60,8 @@ defmodule Membrane.Translate.Deepl do
 
     %__MODULE__{client: Tesla.client(middleware)}
   end
+
+  def supported_languages(), do: @supported_languages
 
   @spec translate(t(), [sentence()], Membrane.Text.Language.code(), Membrane.Text.Language.code()) ::
           {:ok, [sentence()]} | {:error, String.t()}
@@ -64,11 +99,13 @@ defmodule Membrane.Translate.Deepl do
       |> to_string()
       |> String.upcase()
 
+    language_codes = Enum.map(@supported_languages, fn {x, _} -> x end)
+
     cond do
-      code in @language_codes ->
+      code in language_codes ->
         {:ok, code}
 
-      (short = String.slice(code, 0, 2)) in @language_codes ->
+      (short = String.slice(code, 0, 2)) in language_codes ->
         {:ok, short}
 
       true ->
