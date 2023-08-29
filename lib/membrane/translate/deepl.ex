@@ -63,16 +63,15 @@ defmodule Membrane.Translate.Deepl do
 
   def supported_languages(), do: @supported_languages
 
-  @spec translate(t(), [sentence()], Membrane.Text.Language.code(), Membrane.Text.Language.code()) ::
+  @spec translate(t(), [sentence()], String.t(), String.t()) ::
           {:ok, [sentence()]} | {:error, String.t()}
-  def translate(client, sentences, from, to) do
-    from = parse_language!(from) |> String.slice(0, 2)
+  def translate(client, sentences, _from, to) do
     to = parse_language!(to)
 
     body =
       sentences
       |> Enum.map(&{"text", &1})
-      |> Enum.concat([{"source_lang", from}, {"target_lang", to}])
+      |> Enum.concat([{"target_lang", to}])
 
     case Tesla.post(client.client, "translate", body) do
       {:ok, %Tesla.Env{body: %{"translations" => translations}}} ->
