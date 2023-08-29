@@ -22,12 +22,12 @@ defmodule Membrane.Translate.Deepl.Filter do
 
   def_options(
     language_code: [
-      spec: Pepe.Language.code(),
+      spec: String.t(),
       description: "Expected audio spoken language",
-      default: :"en-US"
+      default: "en-US"
     ],
     client: [
-      spec: Pepe.Translate.Deepl.t(),
+      spec: Deepl.t(),
       description: "Deepl client instance"
     ]
   )
