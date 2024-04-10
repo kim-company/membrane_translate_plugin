@@ -27,3 +27,4 @@ pepe-*.tar
 tmp/
 
 /log/
+.env

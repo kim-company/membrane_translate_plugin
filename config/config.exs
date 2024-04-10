@@ -1,5 +1,6 @@
 import Config
 
-config :tesla, adapter: Tesla.Adapter.Mint
-
-import_config "#{config_env()}.exs"
+config :deepl,
+  req_options: [
+    plug: {Req.Test, Deepl}
+  ]

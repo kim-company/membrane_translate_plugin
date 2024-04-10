@@ -4,7 +4,7 @@ defmodule Membrane.Translate.MixProject do
   def project do
     [
       app: :membrane_translate_plugin,
-      version: "0.1.0",
+      version: "0.2.0",
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       deps: deps()
@@ -21,11 +21,10 @@ defmodule Membrane.Translate.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:membrane_core, "~> 0.12"},
-      {:con_cache, "~> 0.13"},
+      {:membrane_core, "~> 1.0"},
       {:membrane_text_format, github: "kim-company/membrane_text_format"},
-      {:tesla, "~> 1.6"},
-      {:castore, "~> 1.0"}
+      {:deepl, github: "kim-company/deepl"},
+      {:plug, "~> 1.0", only: :test}
     ]
   end
 end
