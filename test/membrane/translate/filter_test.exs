@@ -44,7 +44,10 @@ defmodule Membrane.Translate.FilterTest do
         stream_format: %Membrane.Text{locale: "DE"}
       })
       |> child(:translator, %Membrane.Translate.Filter{
-        locale: "EN-US"
+        locale: "EN-US",
+        deepl_opts: [
+          plug: {Req.Test, Deepl}
+        ]
       })
       |> child(:sink, %Membrane.Testing.Sink{})
     ]

@@ -20,6 +20,11 @@ defmodule Membrane.Translate.Filter do
       spec: String.t(),
       description: "Language to translate to",
       default: "en-US"
+    ],
+    deepl_opts: [
+      spec: keyword(),
+      description: "Deepl client options",
+      required: true
     ]
   )
 
@@ -29,13 +34,14 @@ defmodule Membrane.Translate.Filter do
      %{
        source_locale: nil,
        target_locale: opts.locale,
+       deepl: Deepl.new(opts.deepl_opts),
        enabled: true
      }}
   end
 
   @impl true
   def handle_stream_format(_pad, format, _ctx, state) do
-    if format.locale not in Deepl.source_languages() do
+    if format.locale not in Deepl.source_languages(state.deepl) do
       Membrane.Logger.warning("Language #{inspect(format.locale)} cannot be translated")
       {[stream_format: {:output, format}], %{state | enabled: false}}
     else
@@ -46,7 +52,7 @@ defmodule Membrane.Translate.Filter do
 
   @impl true
   def handle_buffer(:input, buffer, _ctx, state) do
-    [translation] = Deepl.translate([buffer.payload], state.target_locale)
+    [translation] = Deepl.translate(state.deepl, [buffer.payload], state.target_locale)
     {[forward: %Buffer{buffer | payload: translation}], state}
   end
 end
