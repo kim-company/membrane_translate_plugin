@@ -41,12 +41,15 @@ defmodule Membrane.Translate.Filter do
 
   @impl true
   def handle_stream_format(_pad, format, _ctx, state) do
-    if format.locale not in Deepl.source_languages(state.deepl) do
-      Membrane.Logger.warning("Language #{inspect(format.locale)} cannot be translated")
-      {[stream_format: {:output, format}], %{state | enabled: false}}
-    else
+    if is_source_language_supported(format.locale, state.deepl) do
       {[stream_format: {:output, %Text{locale: state.target_locale}}],
        %{state | source_locale: format.locale}}
+    else
+      Membrane.Logger.warning(
+        "Source language #{inspect(format.locale)} is not in the list of supported languages: #{inspect(Deepl.source_languages(state.deepl))}"
+      )
+
+      {[stream_format: {:output, format}], %{state | enabled: false}}
     end
   end
 
@@ -54,5 +57,14 @@ defmodule Membrane.Translate.Filter do
   def handle_buffer(:input, buffer, _ctx, state) do
     [translation] = Deepl.translate(state.deepl, [buffer.payload], state.target_locale)
     {[forward: %Buffer{buffer | payload: translation}], state}
+  end
+
+  defp is_source_language_supported(source, deepl) do
+    allowed =
+      deepl
+      |> Deepl.source_languages()
+      |> Enum.map(&String.downcase/1)
+
+    String.downcase(source) in allowed
   end
 end
