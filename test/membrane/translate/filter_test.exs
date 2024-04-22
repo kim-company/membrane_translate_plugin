@@ -20,6 +20,11 @@ defmodule Membrane.Translate.FilterTest do
               language: "DE",
               name: "German",
               supports_formality: true
+            },
+            %{
+              language: "EN-US",
+              name: "English (US)",
+              supports_formality: true
             }
           ])
 

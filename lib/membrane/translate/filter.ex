@@ -30,11 +30,24 @@ defmodule Membrane.Translate.Filter do
 
   @impl true
   def handle_init(_ctx, opts) do
+    {[], opts}
+  end
+
+  def handle_setup(_ctx, opts) do
+    deepl = Deepl.new(opts.deepl_opts)
+    target = safe_target_language_code(opts.locale, deepl)
+
+    if target == nil do
+      Membrane.Logger.warning(
+        "Filter will not be able to translate to #{inspect(opts.locale)} as it is not a supported language"
+      )
+    end
+
     {[],
      %{
        source_locale: nil,
-       target_locale: opts.locale,
-       deepl: Deepl.new(opts.deepl_opts),
+       target_locale: target,
+       deepl: deepl,
        enabled: true
      }}
   end
@@ -54,6 +67,10 @@ defmodule Membrane.Translate.Filter do
   end
 
   @impl true
+  def handle_buffer(:input, buffer, _ctx, state = %{target_locale: nil}) do
+    {[forward: buffer], state}
+  end
+
   def handle_buffer(:input, buffer, _ctx, state) do
     [translation] = Deepl.translate(state.deepl, [buffer.payload], state.target_locale)
     {[forward: %Buffer{buffer | payload: translation}], state}
@@ -63,8 +80,33 @@ defmodule Membrane.Translate.Filter do
     allowed =
       deepl
       |> Deepl.source_languages()
-      |> Enum.map(&String.downcase/1)
+      |> Enum.map(fn code -> ExLang.parse!(code).code end)
 
-    String.downcase(source) in allowed
+    ExLang.parse!(source).code in allowed
+  end
+
+  defp safe_target_language_code(target, deepl) do
+    target_langs = Deepl.target_languages(deepl)
+
+    if String.upcase(target) in target_langs do
+      # It is good as provided.
+      target
+    else
+      Membrane.Logger.warning(
+        "Target language #{inspect(target)} is not in the supported list of target languages for Deepl. Finding best effort match"
+      )
+
+      target_code = ExLang.parse!(target).code
+
+      match =
+        target_langs
+        |> Enum.map(fn lang -> {lang, ExLang.parse!(lang).code} end)
+        |> Enum.find(fn {_lang, code} -> code == target_code end)
+
+      case match do
+        {lang, _code} -> lang
+        nil -> nil
+      end
+    end
   end
 end

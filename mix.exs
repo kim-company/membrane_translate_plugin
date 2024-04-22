@@ -24,6 +24,7 @@ defmodule Membrane.Translate.MixProject do
       {:membrane_core, "~> 1.0"},
       {:membrane_text_format, github: "kim-company/membrane_text_format"},
       {:deepl, github: "kim-company/deepl"},
+      {:ex_lang, github: "kim-company/ex_lang"},
       {:plug, "~> 1.0", only: :test}
     ]
   end
